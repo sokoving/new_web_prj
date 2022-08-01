@@ -282,28 +282,29 @@
             count,
             maker
         }) {
-            if (replyList === null || replyList.length === 0) {
-                return;
-            }
             // 각 댓글 하나의 태그
             let tag = '';
-            for (let rep of replyList) {
-                tag += "<div id='replyContent' class='card-body' data-replyId='" + rep.replyNo + "'>" +
-                    "    <div class='row user-block'>" +
-                    "       <span class='col-md-3'>" +
-                    "         <b>" + rep.replyWriter + "</b>" +
-                    "       </span>" +
-                    "       <span class='offset-md-6 col-md-3 text-right'><b>" + formatDate(rep.replyDate) +
-                    "</b></span>" +
-                    "    </div><br>" +
-                    "    <div class='row'>" +
-                    "       <div class='col-md-6'>" + rep.replyText + "</div>" +
-                    "       <div class='offset-md-2 col-md-4 text-right'>" +
-                    "         <a id='replyModBtn' class='btn btn-sm btn-outline-dark' data-bs-toggle='modal' data-bs-target='#replyModifyModal'>수정</a>&nbsp;" +
-                    "         <a id='replyDelBtn' class='btn btn-sm btn-outline-dark' href='#'>삭제</a>" +
-                    "       </div>" +
-                    "    </div>" +
-                    " </div>";
+            if (replyList === null || replyList.length === 0) {                
+                tag += "<div id='replyContent' class='card-body'>댓글이 아직 없습니다! ㅠㅠ</div>";
+            } else {
+                for (let rep of replyList) {
+                    tag += "<div id='replyContent' class='card-body' data-replyId='" + rep.replyNo + "'>" +
+                        "    <div class='row user-block'>" +
+                        "       <span class='col-md-3'>" +
+                        "         <b>" + rep.replyWriter + "</b>" +
+                        "       </span>" +
+                        "       <span class='offset-md-6 col-md-3 text-right'><b>" + formatDate(rep.replyDate) +
+                        "</b></span>" +
+                        "    </div><br>" +
+                        "    <div class='row'>" +
+                        "       <div class='col-md-6'>" + rep.replyText + "</div>" +
+                        "       <div class='offset-md-2 col-md-4 text-right'>" +
+                        "         <a id='replyModBtn' class='btn btn-sm btn-outline-dark' data-bs-toggle='modal' data-bs-target='#replyModifyModal'>수정</a>&nbsp;" +
+                        "         <a id='replyDelBtn' class='btn btn-sm btn-outline-dark' href='#'>삭제</a>" +
+                        "       </div>" +
+                        "    </div>" +
+                        " </div>";
+                }
             }
             // 댓글 목록에 생성된 DOM 추가
             document.getElementById('replyData').innerHTML = tag;
@@ -317,6 +318,7 @@
             fetch(URL + '?boardNo=' + bno + '&pageNum=' + pageNum)
                 .then(res => res.json())
                 .then(replyMap => {
+                    // console.log(replyMap.replyList);
                     makeReplyDOM(replyMap);
                 });
         }
