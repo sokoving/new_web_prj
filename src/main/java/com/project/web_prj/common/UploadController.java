@@ -6,16 +6,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 
 @Controller
 @Log4j2
 public class UploadController {
+
+    // 업로드 파일 저장 경로
+    private static final String UPLOAD_PATH ="E:\\study\\upload"; // 경로에 \ 두번 써야 하는 건 탈출문자 방지용
 
     // upload-form.jsp로 포워딩하는 요청
     @GetMapping("/upload-form")
@@ -44,8 +46,7 @@ public class UploadController {
 
 
         // 서버에 업로드파일 저장
-            // 업로드 파일 저장 경로
-        String uploadPath="E:\\study\\upload"; // 경로에 \ 두번 써야 하는 건 탈출문자 방지용
+
             // 1. 세이브파일 객체 생성
             // - 첫번째 파라미터는 파일 저장결로 지정, 두번째 파일명 지정
 /*
@@ -57,11 +58,21 @@ public class UploadController {
             e.printStackTrace();
         }
 */
-        FileUtils.uploadFile(file, uploadPath);
+        FileUtils.uploadFile(file, UPLOAD_PATH);
         }
-
-
         return "redirect:/upload-form";
+    }
+
+    // 비동기 요청 파일 업로드 처리
+    @PostMapping("/ajax-upload")
+    @ResponseBody
+    public void ajaxUpload(List<MultipartFile> files){
+        log.info("/ajax-upload POST!! - {}", files.get(0).getOriginalFilename());
+
+        // 클라이언트가 전송한 파일 업로드하기
+        for (MultipartFile file : files) {
+            FileUtils.uploadFile(file, UPLOAD_PATH);
+        }
     }
 
 }

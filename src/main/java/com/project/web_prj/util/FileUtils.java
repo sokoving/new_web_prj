@@ -1,5 +1,8 @@
 package com.project.web_prj.util;
 
+import lombok.extern.log4j.Log4j2;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -7,8 +10,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+@Log4j2
 public class FileUtils {
 
     // 1. 사용자가 파일을 업로드했을 때
@@ -85,5 +90,6 @@ public class FileUtils {
      private static String len2(int n) {
         return new DecimalFormat("00").format(n);
     }
+
 
 }
