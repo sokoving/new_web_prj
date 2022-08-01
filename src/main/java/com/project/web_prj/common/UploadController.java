@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+
 
 @Controller
 @Log4j2
@@ -14,7 +16,7 @@ public class UploadController {
 
     // upload-form.jsp로 포워딩하는 요청
     @GetMapping("/upload-form")
-    public String uploadForm(){
+    public String uploadForm() {
         return "upload/upload-form";
     }
 
@@ -23,14 +25,15 @@ public class UploadController {
         // ex) 원본 파일명, 파일 용량, 파일 컨텐츠 타입 등등
         // 매개변수명 file은 jsp 파일의 폼에서 제출한 input의 name="file"과 일치시킨 것
     @PostMapping("/upload")
-    public String upload(MultipartFile file){
-        log.info("/upload POST! = {}", file);
+    public String upload(MultipartFile file) {
+        log.info("/upload POST! - {}", file);
 
-        // 파일 정보 확인
         log.info("file-name: {}", file.getName());
-        log.info("file-OriginalFilename: {}", file.getOriginalFilename());
-        log.info("file-Size: {}", file.getSize());
-        log.info("file-ContentType: {}", file.getContentType());
+        log.info("file-origin-name: {}", file.getOriginalFilename());
+        log.info("file-size: {}KB", (double) file.getSize() / 1024);
+        log.info("file-type: {}", file.getContentType());
+        System.out.println("==================================================================");
+
 
         // 서버에 업로드파일 저장
             // 업로드 파일 저장 경로
@@ -39,6 +42,13 @@ public class UploadController {
             // - 첫번째 파라미터는 파일 저장결로 지정, 두번째 파일명 지정
         File f = new File(uploadPath, file.getOriginalFilename());
 
+        try {
+            file.transferTo(f);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return "redirect:/upload-form";
     }
+
 }
