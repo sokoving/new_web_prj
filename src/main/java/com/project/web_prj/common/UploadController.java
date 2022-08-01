@@ -1,5 +1,6 @@
 package com.project.web_prj.common;
 
+import com.project.web_prj.util.FileUtils;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,7 @@ public class UploadController {
         String uploadPath="E:\\study\\upload"; // 경로에 \ 두번 써야 하는 건 탈출문자 방지용
             // 1. 세이브파일 객체 생성
             // - 첫번째 파라미터는 파일 저장결로 지정, 두번째 파일명 지정
+/*
         File f = new File(uploadPath, file.getOriginalFilename());
 
         try {
@@ -47,6 +49,8 @@ public class UploadController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+*/
+        FileUtils.uploadFile(file, uploadPath);
 
         return "redirect:/upload-form";
     }
