@@ -1,20 +1,40 @@
 package com.project.web_prj.util;
 
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-
 @Log4j2
 public class FileUtils {
+
+
+    // MIME TYPE 설정을 위한 맵 만들기
+    private static final Map<String, MediaType> mediaMap;
+
+    static {
+        mediaMap = new HashMap<>();
+        mediaMap.put("JPG", MediaType.IMAGE_JPEG);
+        mediaMap.put("GIF", MediaType.IMAGE_GIF);
+        mediaMap.put("PNG", MediaType.IMAGE_PNG);
+    }
+
+    // 확장자를 알려주면 미디어타입을 리턴하는 메서드
+    public static MediaType getMediaType(String ext) {
+        String upperExt = ext.toUpperCase();
+        if (mediaMap.containsKey(upperExt)) {
+            return mediaMap.get(upperExt);
+        }
+        return null;
+    }
+
+
 
     // 1. 사용자가 파일을 업로드했을 때
     // 새로운 파일명을 생성해서 반환하는 메서드
@@ -24,7 +44,7 @@ public class FileUtils {
      *
      * @param file - 클라이언트가 업로드한 파일 정보
      * @param uploadPath - 서버의 업로드 루트 디렉토리 (E:/sl_dev/upload)
-     * @return - 업로드가 완료된 새로운 파일의 이름
+     * @return - 업로드가 완료된 새로운 파일의 full path
      */
     public static String uploadFile(MultipartFile file, String uploadPath) {
 
@@ -47,7 +67,16 @@ public class FileUtils {
             e.printStackTrace();
         }
 
-        return newFileName;
+        // 파일의 풀 경로 (디렉토리경로 + 파일명)
+        String fileFullPath = newUploadPath + File.separator + newFileName;
+
+        // 풀 경로 - 루트 경로 문자열 생성
+        // full-path => E:/sl_dev/upload/2022/08/01/dfsdjfksfdkjs_상어.jpg
+        // res-path =>  /2022/08/01/dfsdjfksfdkjs_상어.jpg
+        // uploadPath => E:/sl_dev/upload
+        String responseFilePath = fileFullPath.substring(uploadPath.length());
+
+        return responseFilePath.replace("\\", "/");
     }
 
     /**
@@ -91,5 +120,8 @@ public class FileUtils {
         return new DecimalFormat("00").format(n);
     }
 
-
+    // 파일명을 받아서 확장자를 반환하는 메서드
+    public static String getFileExtension(String fileName) {
+        return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
 }

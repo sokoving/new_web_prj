@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title></title>
 
     <!-- jquery -->
     <script src="/js/jquery-3.3.1.min.js"></script>
@@ -44,10 +44,9 @@
         <!-- multiple 속성 : 복수 파일 업로드 -->
         <input type="file" name="file" multiple>
         <button type="submit">업로드</button>
-
     </form>
 
-    <!-- 비동기 통신을 통한 실시간 파일 업로드 처리-->
+    <!-- 비동기 통신을 통한 실시간 파일 업로드 처리 -->
     <div class="fileDrop">
         <span>DROP HERE!!</span>
     </div>
@@ -62,10 +61,41 @@
         <input type="file" name="files" id="ajax-file" style="display:none;">
     </div>
 
+    <!-- 업로드된 이미지의 썸네일을 보여주는 영역 -->
+    <div class="uploaded-list">
+
+    </div>
+
+
     <script>
         // start jQuery(jQuery 즉시실행 함수, jQuery 구문 시작)
         $(document).ready(function () {
-
+            function isImageFile(originFileName) {
+                //정규표현식
+                const pattern = /jpg$|gif$|png$/i;
+                return originFileName.match(pattern);
+            }
+            // 파일의 확장자에 따른 렌더링 처리
+            function checkExtType(fileName) {
+                //원본 파일 명 추출
+                let originFileName = fileName.substring(fileName.indexOf("_") + 1);
+                //확장자 추출후 이미지인지까지 확인
+                if (isImageFile(originFileName)) { // 파일이 이미지라면
+                    const $img = document.createElement('img');
+                    $img.classList.add('img-sizing');
+                    $img.setAttribute('src', '/loadFile?fileName=' + fileName);
+                    $img.setAttribute('alt', originFileName);
+                    $('.uploaded-list').append($img);
+                }
+            }
+            // 드롭한 파일을 화면에 보여주는 함수
+            function showFileData(fileNames) {
+                // 이미지인지? 이미지가 아닌지에 따라 구분하여 처리
+                // 이미지면 썸네일을 렌더링하고 아니면 다운로드 링크를 렌더링한다.
+                for (let fileName of fileNames) {
+                    checkExtType(fileName);
+                }
+            }
             // drag & drop 이벤트
             const $dropBox = $('.fileDrop');
 
@@ -88,27 +118,23 @@
             // drop 이벤트
             $dropBox.on('drop', e => {
                 e.preventDefault();
-                // console.log("드롭 이벤트 작동");
-
+                // console.log('드롭 이벤트 작동!');
                 // 드롭된 파일 정보를 서버로 전송
                 // 1. 드롭된 파일 데이터 읽기
                 console.log(e);
 
                 // e에서 파일 정보가 있는 곳
                 const files = e.originalEvent.dataTransfer.files;
-                console.log('drop file datas: ', files);
-
-                // 2.읽은 파일 데이터를 input[type=file] 태그에 저장
+                // console.log('drop file data: ', files);
+                // 2. 읽은 파일 데이터를 input[type=file]태그에 저장
                 const $fileInput = $('#ajax-file');
                 $fileInput.prop('files', files); // 첫번째 파라미터는 input의 name 속성과 맞추기
 
                 // console.log($fileInput);
-
-                // 3. 파일 데이터를 비동기 전송하기 위해서는 FormData  객체가 필요
-                const formData = new formData();
-
-                // 4. 전송할 파일들을 전부 FormData 안에 포장
-                for (let file of $fileInput.files){
+                // 3. 파일 데이터를 비동기 전송하기 위해서는 FormData객체가 필요
+                const formData = new FormData();
+                // 4. 전송할 파일들을 전부 FormData안에 포장
+                for (let file of $fileInput[0].files) {
                     formData.append('files', file);
                 }
 
@@ -116,19 +142,20 @@
                 const reqInfo = {
                     method: 'POST',
                     body: formData
-                }
+                };
                 fetch('/ajax-upload', reqInfo)
                     .then(res => {
-                        console.log(res.status);
+                        //console.log(res.status);
+                        return res.json();
                     })
-
-            })
-
-
+                    .then(fileNames => {
+                        console.log(fileNames);
+                        showFileData(fileNames);
+                    });
+            });
         });
         // end jQuery
     </script>
-
 
 
 </body>
