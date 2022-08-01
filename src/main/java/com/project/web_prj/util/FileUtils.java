@@ -29,12 +29,12 @@ public class FileUtils {
         // UUID: 중복 없는 긴 문자열 생성하는 자바 유틸 클래스
         // toString()으로 문자열 반환할 수 있다
 
-        // 업로드 경로 변경(업로드 날짜에 따라 저장하는 파일이 새로 생김)
-        // "E:\\study\\upload" >"E:\\study\\upload\\2022\\08\\01"
+        // 업로드 경로를 변경 (업로드 날짜에 따라 저장하는 파일이 새로 생김)
+        // E:/sl_dev/upload  ->  E:/sl_dev/upload/2022/08/01
         String newUploadPath = getNewUploadPath(uploadPath);
 
         // 파일 업로드 수행
-        File f = new File(uploadPath, newFileName);
+        File f = new File(newUploadPath, newFileName);
 
         try {
             file.transferTo(f);
@@ -46,12 +46,13 @@ public class FileUtils {
     }
 
     /**
-     * 원본 업로드 경로를 받아서 일자별 폴더를 생성한 후 최종 경로를 리턴
+     * 원본 업로드 경로를 받아서 일자별 폴더를 생성 한 후 최종경로를 리턴
      * @param uploadPath - 원본 업로드 경로
-     * @return 일자별 폴더가 포함된 새로운 얼로드 경로
+     * @return 일자별 폴더가 포함된 새로운 업로드 경로
      */
     private static String getNewUploadPath(String uploadPath) {
-        // 오늘 년, 월, 일 정보 가져오기
+
+        // 오늘 년,월,일 정보 가져오기
         LocalDateTime now = LocalDateTime.now();
         int y = now.getYear();
         int m = now.getMonthValue();
@@ -67,22 +68,22 @@ public class FileUtils {
         String newUploadPath = uploadPath;
 
         // File.separator : 운영체제에 맞는 디렉토리 경로구분문자를 생성
-        // ex) 리눅스 : /, 윈도우 : \
+        // 리눅스 : / ,  윈도우 : \
         for (String date : dateInfo) {
             newUploadPath += File.separator + date;
 
-            // 해당 경로대로 폴더 생성
+            // 해당 경로대로 폴더를 생성
             File dirName = new File(newUploadPath);
-            if(!dirName.exists()) dirName.mkdir();
+            if (!dirName.exists()) dirName.mkdir();
         }
 
-
-        return null;
+        return newUploadPath;
     }
 
     // 한 자릿수 월, 일 정보를 항상 2자리로 만들어주는 메서드
     // ex) 1 -> 01
-    private static String len2(int n){
+     private static String len2(int n) {
         return new DecimalFormat("00").format(n);
     }
+
 }

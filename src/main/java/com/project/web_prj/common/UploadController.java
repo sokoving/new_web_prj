@@ -5,10 +5,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 
 @Controller
@@ -26,9 +28,14 @@ public class UploadController {
         // ex) 원본 파일명, 파일 용량, 파일 컨텐츠 타입 등등
         // 매개변수명 file은 jsp 파일의 폼에서 제출한 input의 name="file"과 일치시킨 것
     @PostMapping("/upload")
-    public String upload(MultipartFile file) {
-        log.info("/upload POST! - {}", file);
+    // 단수 파일 받기
+    // public String upload(MultipartFile file) {
+    
+    // 복수 파일 받기
+    public String upload(@RequestParam("file") List<MultipartFile> fileList) {
+        log.info("/upload POST! - {}", fileList);
 
+        for (MultipartFile file : fileList) {
         log.info("file-name: {}", file.getName());
         log.info("file-origin-name: {}", file.getOriginalFilename());
         log.info("file-size: {}KB", (double) file.getSize() / 1024);
@@ -51,6 +58,8 @@ public class UploadController {
         }
 */
         FileUtils.uploadFile(file, uploadPath);
+        }
+
 
         return "redirect:/upload-form";
     }
