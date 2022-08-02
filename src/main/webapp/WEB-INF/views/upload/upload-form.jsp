@@ -86,6 +86,23 @@
                     $img.setAttribute('src', '/loadFile?fileName=' + fileName);
                     $img.setAttribute('alt', originFileName);
                     $('.uploaded-list').append($img);
+                } 
+
+                // 이미지가 아니라면 다운로드 링크를 생성
+                else {
+
+                    const $a = document.createElement('a');
+                    $a.setAttribute('href', '/loadFile?fileName='+fileName); // raw file 줌
+                    const $img = document.createElement('img');
+                    $img.classList.add('img-sizing');
+                    $img.setAttribute('src', '/img/file_icon.jpg');
+                    $img.setAttribute('alt', originFileName);
+
+                    $a.append($img);
+                    $a.innerHTML += '<span>' + originFileName + '</span>';
+                    $('.uploaded-list').append($img);
+
+
                 }
             }
             // 드롭한 파일을 화면에 보여주는 함수
@@ -126,11 +143,12 @@
                 // e에서 파일 정보가 있는 곳
                 const files = e.originalEvent.dataTransfer.files;
                 // console.log('drop file data: ', files);
+
                 // 2. 읽은 파일 데이터를 input[type=file]태그에 저장
                 const $fileInput = $('#ajax-file');
                 $fileInput.prop('files', files); // 첫번째 파라미터는 input의 name 속성과 맞추기
-
                 // console.log($fileInput);
+
                 // 3. 파일 데이터를 비동기 전송하기 위해서는 FormData객체가 필요
                 const formData = new FormData();
                 // 4. 전송할 파일들을 전부 FormData안에 포장
