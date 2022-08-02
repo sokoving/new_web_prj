@@ -87,4 +87,12 @@
         WHERE board_no=#{boardNo}
     </update>
 
+<!--    첨부파일 추가-->
+    <insert id="addFile">
+        INSERT INTO file_upload
+            (file_name, bno)
+        VALUES
+            (#{fileName}, seq_tbl_board.currval)
+    </insert>
+
 </mapper>

@@ -30,9 +30,22 @@ public class BoardService {
     private final ReplyMapper replyMapper;
 
     // 게시물 등록 요청 중간 처리
+    @Transactional
     public boolean saveService(Board board) {
         log.info("save service start - {}", board);
-        return boardMapper.save(board);
+
+        // 게시물 내용 DB에 저장
+        boolean flag = boardMapper.save(board);
+
+        List<String> fileNames = board.getFileNames();
+        if (fileNames != null && fileNames.size() > 0) {
+            for (String fileName : fileNames) {
+                // 첨부파일 내용 DB에 저장
+                boardMapper.addFile(fileName);
+            }
+        }
+
+        return flag;
     }
 
     // 게시물 전체 조회 요청 중간 처리

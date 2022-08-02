@@ -1,11 +1,8 @@
 package com.project.web_prj.util;
 
 import org.junit.jupiter.api.Test;
-import org.objenesis.instantiator.util.UnsafeUtils;
 
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class FileUtilsTest {
 
