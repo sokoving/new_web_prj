@@ -56,7 +56,7 @@
         - 해당 input태그는 사용자에게 보여주어 파일을 직접 선택하게 할 것이냐
           혹은 드래그앤 드롭으로만 처리를 할 것이냐에 따라 display를 상태를 결정
      -->
-     <!-- 동기 통신과 다른 점은 form이 없다는 것, 파일 정보를 담을 input창은 필요하지만 사용자 눈에 보일 필요는 없다 -->
+    <!-- 동기 통신과 다른 점은 form이 없다는 것, 파일 정보를 담을 input창은 필요하지만 사용자 눈에 보일 필요는 없다 -->
     <div class="uploadDiv">
         <input type="file" name="files" id="ajax-file" style="display:none;">
     </div>
@@ -77,22 +77,26 @@
             }
             // 파일의 확장자에 따른 렌더링 처리
             function checkExtType(fileName) {
+
                 //원본 파일 명 추출
                 let originFileName = fileName.substring(fileName.indexOf("_") + 1);
+
                 //확장자 추출후 이미지인지까지 확인
                 if (isImageFile(originFileName)) { // 파일이 이미지라면
+
                     const $img = document.createElement('img');
                     $img.classList.add('img-sizing');
                     $img.setAttribute('src', '/loadFile?fileName=' + fileName);
                     $img.setAttribute('alt', originFileName);
                     $('.uploaded-list').append($img);
-                } 
+                }
 
                 // 이미지가 아니라면 다운로드 링크를 생성
                 else {
 
                     const $a = document.createElement('a');
-                    $a.setAttribute('href', '/loadFile?fileName='+fileName); // raw file 줌
+                    $a.setAttribute('href', '/loadFile?fileName=' + fileName);  // raw file 줌
+
                     const $img = document.createElement('img');
                     $img.classList.add('img-sizing');
                     $img.setAttribute('src', '/img/file_icon.jpg');
@@ -100,10 +104,12 @@
 
                     $a.append($img);
                     $a.innerHTML += '<span>' + originFileName + '</span>';
-                    $('.uploaded-list').append($img);
 
+                    $('.uploaded-list').append($a);
 
                 }
+
+
             }
             // 드롭한 파일을 화면에 보여주는 함수
             function showFileData(fileNames) {

@@ -2,7 +2,6 @@ package com.project.web_prj.common;
 
 import com.project.web_prj.util.FileUtils;
 import lombok.extern.log4j.Log4j2;
-
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +24,7 @@ import java.util.List;
 public class UploadController {
 
     // 업로드 파일 저장 경로
-    private static final String UPLOAD_PATH ="E:\\study\\upload"; // 경로에 \ 두번 써야 하는 건 탈출문자 방지용
+    private static final String UPLOAD_PATH = "E:\\study\\upload"; // 경로에 \ 두번 써야 하는 건 탈출문자 방지용
 
     // upload-form.jsp로 포워딩하는 요청
     @GetMapping("/upload-form")
@@ -41,7 +39,7 @@ public class UploadController {
     public String upload(@RequestParam("file") List<MultipartFile> fileList) {
         log.info("/upload POST! - {}", fileList);
 
-        for (MultipartFile file: fileList) {
+        for (MultipartFile file : fileList) {
             log.info("file-name: {}", file.getName());
             log.info("file-origin-name: {}", file.getOriginalFilename());
             log.info("file-size: {}KB", (double) file.getSize() / 1024);
@@ -50,7 +48,6 @@ public class UploadController {
 
 
             // 서버에 업로드파일 저장
-
 
 
             // 1. 세이브파일 객체 생성
@@ -123,7 +120,22 @@ public class UploadController {
 
             if (mediaType != null) { // 이미지라면
                 headers.setContentType(mediaType);
+            } else { // 이미지가 아니면 다운로드 가능하게 설정
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+                // 파일명을 원래대로 복구
+                fileName = fileName.substring(fileName.lastIndexOf("_") + 1);
+
+                // 파일명이 한글인 경우 인코딩 재설정
+                String encoding = new String(
+                        fileName.getBytes("UTF-8"), "ISO-8859-1");
+
+                // 헤더에 위 내용들 추가
+                headers.add("Content-Disposition"
+                        , "attachment; fileName=\"" + encoding + "\"");
+
             }
+
 
             // 4. 파일 순수데이터 바이트배열에 저장.
             byte[] rawData = IOUtils.toByteArray(fis);
