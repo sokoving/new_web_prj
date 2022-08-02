@@ -583,7 +583,7 @@
                 else {
 
                     const $a = document.createElement('a');
-                    $a.setAttribute('href', '/loadFile?fileName=' + fileName);
+                    $a.setAttribute('href', '/loadFile?fileName=' + fileName);  // raw file 줌
 
                     const $img = document.createElement('img');
                     $img.classList.add('img-sizing');
@@ -591,9 +591,10 @@
                     $img.setAttribute('alt', originFileName);
 
                     $a.append($img);
-                    $a.innerHTML += '<span>' + originFileName + '</span';
+                    $a.innerHTML += '<span>' + originFileName + '</span>';
 
                     $('.uploaded-list').append($a);
+
 
                 }
 
