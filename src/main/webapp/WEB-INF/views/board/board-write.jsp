@@ -125,7 +125,7 @@
     </script>
 
     <script>
-        // start JQuery  (jQuery 즉시실행 함수, jQuery 구문 시작)
+        // start JQuery (jQuery 즉시실행 함수, jQuery 구문 시작)
         $(document).ready(function () {
             function isImageFile(originFileName) {
                 //정규표현식
@@ -182,7 +182,7 @@
             });
             // drag 탈출 이벤트 (on = addEventListener)
             $dropBox.on('dragleave', e => {
-                e.preventDefault();  // 이미지 파일 드랍했을 때 열리는 거 막기
+                e.preventDefault(); // 이미지 파일 드랍했을 때 열리는 거 막기
                 $dropBox
                     .css('border-color', 'gray')
                     .css('background', 'transparent');
@@ -195,12 +195,12 @@
                 // 1. 드롭된 파일 데이터 읽기
                 // console.log(e);
 
-                // e에서 파일 정보가 있는 곳
+                 // e에서 파일 정보가 있는 곳
                 const files = e.originalEvent.dataTransfer.files;
                 // console.log('drop file data: ', files);
                 // 2. 읽은 파일 데이터를 input[type=file]태그에 저장
                 const $fileInput = $('#ajax-file');
-                $fileInput.prop('files', files); // 첫번째 파라미터는 input의 name 속성과 맞추기
+                $fileInput.prop('files', files);  // 첫번째 파라미터는 input의 name 속성과 맞추기
                 // console.log($fileInput);
                 // 3. 파일 데이터를 비동기 전송하기 위해서는 FormData객체가 필요
                 const formData = new FormData();
