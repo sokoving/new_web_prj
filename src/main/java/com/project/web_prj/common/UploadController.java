@@ -36,7 +36,7 @@ public class UploadController {
     public String upload(@RequestParam("file") List<MultipartFile> fileList) {
         log.info("/upload POST! - {}", fileList);
 
-        for (MultipartFile file : fileList) {
+        for (MultipartFile file: fileList) {
             log.info("file-name: {}", file.getName());
             log.info("file-origin-name: {}", file.getOriginalFilename());
             log.info("file-size: {}KB", (double) file.getSize() / 1024);
@@ -45,6 +45,7 @@ public class UploadController {
 
 
             // 서버에 업로드파일 저장
+
 
 
             // 1. 세이브파일 객체 생성
@@ -65,7 +66,7 @@ public class UploadController {
     // 비동기 요청 파일 업로드 처리
     @PostMapping("/ajax-upload")
     @ResponseBody
-    public List<String> ajaxUpload(List<MultipartFile> files) {
+    public ResponseEntity<List<String>> ajaxUpload(List<MultipartFile> files) {
 
         log.info("/ajax-upload POST! - {}", files.get(0).getOriginalFilename());
 
@@ -78,7 +79,7 @@ public class UploadController {
             fileNames.add(fullPath);
         }
 
-        return fileNames;
+        return new ResponseEntity<>(fileNames, HttpStatus.OK);
     }
 
     // 파일 데이터 로드 요청 처리
@@ -133,7 +134,6 @@ public class UploadController {
 
             }
 
-
             // 4. 파일 순수데이터 바이트배열에 저장.
             byte[] rawData = IOUtils.toByteArray(fis);
 
@@ -158,7 +158,7 @@ public class UploadController {
 
             delFile.delete();
 
-            return new ResponseEntity<>("file-de-lsuccess", HttpStatus.OK);
+            return new ResponseEntity<>("file-del-success", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

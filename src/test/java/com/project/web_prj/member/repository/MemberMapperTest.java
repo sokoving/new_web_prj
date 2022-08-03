@@ -2,8 +2,6 @@ package com.project.web_prj.member.repository;
 
 import com.project.web_prj.member.domain.Auth;
 import com.project.web_prj.member.domain.Member;
-import com.project.web_prj.member.service.MemberService;
-import com.project.web_prj.reply.repository.ReplyMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,6 +152,6 @@ class MemberMapperTest {
         } else {
             System.out.println("존재하지 않는 아이디입니다.");
         }
-    }
 
+    }
 }

@@ -18,6 +18,7 @@ import static com.project.web_prj.member.service.LoginFlag.*;
 @Log4j2
 @RequiredArgsConstructor
 public class MemberService {
+
     private final MemberMapper memberMapper;
     private final BCryptPasswordEncoder encoder;
 
@@ -57,8 +58,10 @@ public class MemberService {
         if (foundMember != null) {
             if (encoder.matches(inputData.getPassword(), foundMember.getPassword())) {
                 // 로그인 성공
-                // 세션에 사용자 정보 기록 저장
+                // 세션에 사용자 정보기록 저장
                 session.setAttribute("loginUser", foundMember);
+
+                // 세션 타임아웃 설정
                 session.setMaxInactiveInterval(60 * 60); // 1시간 (지정 안 하면 기본값 30분으로 설정됨)
                 return SUCCESS;
             } else {

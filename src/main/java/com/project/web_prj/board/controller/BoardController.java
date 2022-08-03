@@ -77,14 +77,16 @@ public class BoardController {
     // 게시물 쓰기 화면 요청
     @GetMapping("/write")
     public String write(HttpSession session, RedirectAttributes ra) {
-        log.info("controller request /board/write GET!");
-        if(session.getAttribute("loginUser") == null){
+
+        if (session.getAttribute("loginUser") == null) {
             ra.addFlashAttribute("warningMsg", "forbidden");
             return "redirect:/member/sign-in";
         }
 
+        log.info("controller request /board/write GET!");
         return "board/board-write";
     }
+
     // 게시물 등록 요청
     @PostMapping("/write")
     public String write(Board board,
@@ -109,7 +111,6 @@ public class BoardController {
 
         return flag ? "redirect:/board/list" : "redirect:/";
     }
-
 
     // 게시물 삭제 요청
     @GetMapping("/delete")
@@ -141,13 +142,11 @@ public class BoardController {
     // 특정 게시물에 붙은 첨부파일경로 리스트를 클라이언트에게 비동기 전송
     @GetMapping("/file/{bno}")
     @ResponseBody
-    public ResponseEntity<List<String>> getFiles(@PathVariable long bno){
+    public ResponseEntity<List<String>> getFiles(@PathVariable Long bno) {
 
         List<String> files = boardService.getFiles(bno);
         log.info("/board/file/{} GET! ASYNC - {}", bno, files);
 
         return new ResponseEntity<>(files, HttpStatus.OK);
-
     }
-
 }
