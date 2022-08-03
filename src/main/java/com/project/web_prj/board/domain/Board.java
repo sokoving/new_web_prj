@@ -21,6 +21,8 @@ public class Board {
 
 
     // 커스텀 데이터 필드
+        // 도메인 클래스에는 테이블 컬럼에 매칭되는 필드만 존재해야 한다
+        // 요청에 따라 필요한 커스텀 필드는 따로 클래스를 빼서 커맨드 객체로 받는 게 좋음
     private String shortTitle; // 줄임 제목
     private String prettierDate; // 변경된 날짜포맷 문자열
     private boolean newArticle; // 신규 게시물 여부
