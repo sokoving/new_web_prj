@@ -11,7 +11,6 @@
         .wrap {
             margin: 200px auto;
         }
-
     </style>
 </head>
 <body>
@@ -22,11 +21,11 @@
             <div class="offset-md-2 col-md-4">
                 <div class="card" style="width:200%;">
                     <div class="card-header text-white" style="background: #343A40;">
-                        <h2><span style="color: gray;">MVC</span> 로그인</h2>               
+                        <h2><span style="color: gray;">MVC</span> 로그인</h2>					
                     </div>
                     <div class="card-body">
                         
-                        <form action="/loginCheck" name="sign-in" method="post" id="signInForm"
+                        <form action="/member/sign-in" name="sign-in" method="post" id="signInForm"
                         style="margin-bottom: 0;">
                         <table style="cellpadding: 0; cellspacing: 0; margin: 0 auto; width: 100%">
                             <tr>
@@ -59,7 +58,7 @@
                                 <td>
                                     <label for="auto-login">
                                         <span>
-                                        <i class="fa fa-sign-in" aria-hidden="true"></i> 
+                                        <i class="fas fa-sign-in-alt"></i>
                                         자동 로그인
                                         <input type="checkbox" id="auto-login" name="autoLogin">
                                         </span>
@@ -82,13 +81,13 @@
                                 <td
                                     style="width: 100%; text-align: center; colspan: 2; margin-top: 24px; padding-top: 12px; border-top: 1px solid #ececec">
     
-                                    <a class="btn form-control tooltipstered" href="/member/sign-in"
+                                    <a class="btn form-control tooltipstered" href="/member/sign-up"
                                     style="cursor: pointer; margin-top: 0; height: 40px; color: white; background-color: gray; border: 0px solid #388E3C; opacity: 0.8">
                                         회원가입</a>
                                 </td>
                             </tr>
                             <tr>
-                                <td   style="width: 100%; text-align: center; colspan: 2; margin-top: 24px; padding-top: 12px; border-top: 1px solid #ececec">
+                                <td	style="width: 100%; text-align: center; colspan: 2; margin-top: 24px; padding-top: 12px; border-top: 1px solid #ececec">
     
                                     <a id="custom-login-btn" href="https://kauth.kakao.com/oauth/authorize?client_id=9727a2bba3b021a605228cd4978e3491&redirect_uri=http://localhost/auth/kakao&response_type=code">
                                         <img src="//mud-kage.kakao.com/14/dn/btqbjxsO6vP/KPiGpdnsubSq3a0PHEGUK1/o.jpg" width="300"/>
@@ -102,24 +101,19 @@
             </div>
         </div>
     </div>
-
-    <script>
-
-        const msg = '${msg}';
-        console.log("msg : " + msg);
-        if(msg === 'reg-success'){
-            alert('축하합니다, 회원가입에 성공했습니다.')
-        }
-
-        const loginMsg = '${loginMsg}'
-        if(loginMsg === 'NO_ACC'){
-            alert('존재하지 않는 회원입니다. ')
-        } else if(loginMsg === 'NO_PW'){
-            alert('비밀번호가 틀렸습니다. ')
-        }
-
-    </script>
     
+    <script>
+        const msg = '${msg}';
+        if (msg === 'reg-success') {
+            alert('축하합니다. 회원가입에 성공했습니다.');
+        }
+        const loginMsg = '${loginMsg}';
+        if (loginMsg === 'NO_ACC') {
+            alert('존재하지 않는 회원입니다.');
+        } else if (loginMsg === 'NO_PW') {
+            alert('비밀번호가 틀렸습니다.');
+        }
+    </script>
 
 
     <%@ include file="../include/footer.jsp" %>

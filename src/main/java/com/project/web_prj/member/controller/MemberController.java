@@ -20,7 +20,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 @RequestMapping("/member")
 public class MemberController {
-
     private final MemberService memberService;
 
     // 회원가입 양식 띄우기 요청
@@ -48,7 +47,7 @@ public class MemberController {
         return new ResponseEntity<>(flag, HttpStatus.OK);
     }
 
-    // 로그인 화면을 열어주는 요청 처리
+    // 로그인 화면을 열어주는 요청처리
     @GetMapping("/sign-in")
     public void signIn() {
         log.info("/member/sign-in GET! - forwarding to sign-in.jsp");
@@ -57,15 +56,18 @@ public class MemberController {
     // 로그인 요청 처리
     @PostMapping("/sign-in")
     public String signIn(LoginDTO inputData, RedirectAttributes ra) {
-        log.info("/member/sign-in Post! - {}", inputData);
 
+        log.info("/member/sign-in POST - {}", inputData);
+
+        // 로그인 서비스 호출
         LoginFlag flag = memberService.login(inputData);
 
-        if (flag == LoginFlag.SUCCESS){
+        if (flag == LoginFlag.SUCCESS) {
             log.info("login success!!");
             return "redirect:/";
         }
         ra.addFlashAttribute("loginMsg", flag);
         return "redirect:/member/sign-in";
+
     }
 }

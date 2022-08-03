@@ -11,7 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class MemberServiceTest {
+
     @Autowired MemberService service;
+
 
     @Test
     @DisplayName("평문 비밀번호로 회원가입하면 암호화되어 저장된다.")
@@ -42,5 +44,7 @@ class MemberServiceTest {
         assertTrue(flag);
 
     }
+
+
 
 }

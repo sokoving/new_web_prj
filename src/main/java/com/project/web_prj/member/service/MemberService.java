@@ -17,7 +17,6 @@ import static com.project.web_prj.member.service.LoginFlag.*;
 @Log4j2
 @RequiredArgsConstructor
 public class MemberService {
-
     private final MemberMapper memberMapper;
     private final BCryptPasswordEncoder encoder;
 
@@ -51,22 +50,21 @@ public class MemberService {
     }
 
     // 로그인 처리
-    public LoginFlag login(LoginDTO inputData){
+    public LoginFlag login(LoginDTO inputData) {
+        // 회원가입 여부 확인
         Member foundMember = memberMapper.findUser(inputData.getAccount());
-        if(foundMember != null){
-            if (encoder.matches(inputData.getPassword(), foundMember.getPassword())){
-                //로그인 성공
+        if (foundMember != null) {
+            if (encoder.matches(inputData.getPassword(), foundMember.getPassword())) {
+                // 로그인 성공
                 return SUCCESS;
-            } else{
+            } else {
                 // 비번 틀림
                 return NO_PW;
             }
         } else {
-            //아이디 틀림
+            // 아이디 없음
             return NO_ACC;
         }
     }
-
-
 
 }
