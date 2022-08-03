@@ -113,6 +113,10 @@
         } else if (loginMsg === 'NO_PW') {
             alert('비밀번호가 틀렸습니다.');
         }
+        const warning = '${warningMsg}';
+        if (warning == 'forbidden'){
+            alert('로그인 후 사용할 수 있습니다.')
+        }
     </script>
 
 
