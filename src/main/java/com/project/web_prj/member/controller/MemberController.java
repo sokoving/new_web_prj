@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,8 +50,9 @@ public class MemberController {
     }
 
     // 로그인 화면을 열어주는 요청처리
+    // @ModelAttribute String message: 로그인이 필요한 요청인데 인터셉터에서 false 나올 경우 오는 메세지를 모델에 담아 jsp에 준다
     @GetMapping("/sign-in")
-    public void signIn(HttpServletRequest request) {
+    public void signIn(@ModelAttribute("message") String message, HttpServletRequest request) {
         log.info("/member/sign-in GET! - forwarding to sign-in.jsp");
 
         // 요청 정보 헤더 안에는 Referer라는 키가 있는데

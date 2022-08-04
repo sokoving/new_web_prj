@@ -103,6 +103,7 @@
     </div>
     
     <script>
+        // 메세지 날라오는 거 리팩토링하기
         const msg = '${msg}';
         if (msg === 'reg-success') {
             alert('축하합니다. 회원가입에 성공했습니다.');
@@ -113,8 +114,12 @@
         } else if (loginMsg === 'NO_PW') {
             alert('비밀번호가 틀렸습니다.');
         }
-        const warning = '${warningMsg}';
-        if (warning === 'forbidden') {
+        // const warning = '${warningMsg}';
+        // if (warning === 'forbidden') {
+        //     alert('로그인 후 사용할 수 있습니다.');
+        // }
+        const message = '${message}';
+        if(message === 'no-login'){
             alert('로그인 후 사용할 수 있습니다.');
         }
     </script>
