@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-@RequestMapping("/api/v1/replies")
+@RequestMapping("/api/v1/replies") // 비동기 실시간으로 빼오기 때문에 이 url이 주소창에 찍히지는 않는다
 @CrossOrigin
 public class ReplyApiController {
 
@@ -41,6 +41,8 @@ public class ReplyApiController {
     // 댓글 등록 요청
     @PostMapping("")
     public String create(@RequestBody Reply reply, HttpSession session) {
+        // 비동기 처리
+        // 클라이언트에서 폼으로 보내는 게 아니라 json으로 보낸 걸 받기 > @RequestBody
         reply.setAccount(LoginUtils.getCurrentMemberAccount(session));
         log.info("/api/v1/replies POST! - {}", reply);
         boolean flag = replyService.write(reply);

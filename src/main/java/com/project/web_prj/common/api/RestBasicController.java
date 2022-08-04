@@ -5,7 +5,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // jsp 뷰포워딩을 하지않고 클라이언트에게 JSON데이터를 전송함
 @RestController
@@ -54,7 +56,18 @@ public class RestBasicController {
     }
 
 
-    // RestController에서 뷰포워딩하기
+    // @Controller에서  json으로 보내는 법 > @ResponseBody
+    @GetMapping("/api/haha")
+    @ResponseBody // 리턴 데이터가 뷰포워딩이 아닌 json으로 전달됨
+    public Map<String, String> haha(){
+        HashMap<String, String> map = new HashMap<>();
+        map.put("a", "aaa");
+        map.put("b", "bbb");
+        map.put("c", "ccc");
+        return map;
+    }
+
+    // @RestController에서 뷰포워딩 하는 법 > 리턴 타입을 ModelAndView로 하고 mv에 jsp 경로 적고 리턴
     @GetMapping("/hoho")
     public ModelAndView hoho() {
         ModelAndView mv = new ModelAndView();
