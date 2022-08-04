@@ -1,6 +1,7 @@
 package com.project.web_prj.intercepter;
 
 import com.project.web_prj.board.domain.Board;
+import com.project.web_prj.board.dto.ValidateMemberDTO;
 import com.project.web_prj.member.domain.Auth;
 import com.project.web_prj.util.FileUtils;
 import com.project.web_prj.util.LoginUtils;
@@ -78,8 +79,11 @@ public class BoardInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();
         log.info("requestURI - {}", requestURI);
 
+        // 현재 요청 메서드 정보 확인
+        String method = request.getMethod();
+
         // postHandle은 uriList 목록에 있는 URI에서만 작동하게 함
-        if (uriList.contains(requestURI)) {
+        if (uriList.contains(requestURI) && method.equalsIgnoreCase("GET")) {
             log.info("board interceptor postHandle() ! ");
 
             HttpSession session = request.getSession();
@@ -88,26 +92,29 @@ public class BoardInterceptor implements HandlerInterceptor {
             Map<String, Object> modelMap = modelAndView.getModel();
 
 //        log.info("modelMap.size() - {}", modelMap.size());
-//        log.info("modelMap - {}", modelMap);
+//            log.info("modelMap - {}", modelMap);
 
-            Board board = (Board) modelMap.get("board");
+            ValidateMemberDTO dto = (ValidateMemberDTO) modelMap.get("validate");
+
 
             // 수정하려는 게시글의 계정명 정보와 세션에 저장된 계정명 정보가
             // 일치하지 않으면 돌려보내라
-//        log.info("게시물의 계정명 - {}", board.getAccount());
-//        log.info("로그인한 계정명 - {}", getCurrentMemberAccount(request.getSession()));
+//            log.info("게시물의 계정명 - {}", dto.getAccount());
+//            log.info("로그인한 계정명 - {}", getCurrentMemberAccount(request.getSession()));
 
-            if (!isMine(session, board)) {
+            if (isAdmin(session)) return;
+
+            if (!isMine(session, dto.getAccount())) {
                 response.sendRedirect("/board/list");
             }
         }
     }
 
     private boolean isAdmin(HttpSession session) {
-        return getCurrentMemberAuth(session).equals(Auth.ADMIN);
+        return getCurrentMemberAuth(session).equals("ADMIN");
     }
 
-    private boolean isMine(HttpSession session, Board board) {
-        return board.getAccount().equals(getCurrentMemberAccount(session));
+    private static boolean isMine(HttpSession session, String account) {
+        return account.equals(getCurrentMemberAccount(session));
     }
 }

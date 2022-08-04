@@ -201,4 +201,8 @@ public class BoardService {
     public List<String> getFiles(Long bno) {
         return boardMapper.findFileNames(bno);
     }
+
+    public Object getMember(Long boardNo) {
+        return boardMapper.findMemberByBoardNo(boardNo);
+    }
 }
