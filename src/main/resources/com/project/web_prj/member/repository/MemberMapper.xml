@@ -31,11 +31,9 @@
     </select>
     <!-- 회원 조회 기능   -->
     <select id="findUser" resultMap="memberMap">
-
         SELECT *
         FROM tbl_member
         WHERE account = #{account}
-
     </select>
 
     <!--  자동 로그인 정보 추가  -->
@@ -44,5 +42,10 @@
         SET session_id = #{sessionId}, limit_time = #{limitTime}
         WHERE account = #{account}
     </update>
+
+    <select id="findMemberBySessionId" resultMap="memberMap">
+        SELECT * FROM tbl_member
+        WHERE session_id = #{sessionId}
+    </select>
 
 </mapper>

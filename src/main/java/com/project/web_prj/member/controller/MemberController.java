@@ -4,6 +4,7 @@ import com.project.web_prj.member.dto.LoginDTO;
 import com.project.web_prj.member.domain.Member;
 import com.project.web_prj.member.service.LoginFlag;
 import com.project.web_prj.member.service.MemberService;
+import com.project.web_prj.util.LoginUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -89,11 +90,19 @@ public class MemberController {
     }
 
     @GetMapping("/sign-out")
-    public String signOut(HttpSession session) {
+    public String signOut(HttpServletRequest request, HttpServletResponse response) {
 
-        if (session.getAttribute("loginUser") != null) {
+        HttpSession session = request.getSession();
+
+        if (LoginUtils.isLogin(session)) {
+            // 만약 자동로그인 상태라면 해제한다.
+            if (LoginUtils.hasAutoLoginCookie(request)){
+                memberService.autoLogout(LoginUtils.getCurrentMemberAccount(session), request, response);
+            }
+
+
             // 1. 세션에서 정보를 삭제한다.
-            session.removeAttribute("loginUser");
+            session.removeAttribute(LoginUtils.LOGIN_FLAG);
 
             // 2. 세션을 무효화한다.
             session.invalidate();

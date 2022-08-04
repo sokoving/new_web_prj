@@ -1,15 +1,17 @@
 package com.project.web_prj.member.service;
 
+import com.project.web_prj.member.domain.Member;
 import com.project.web_prj.member.dto.AutoLoginDTO;
 import com.project.web_prj.member.dto.LoginDTO;
-import com.project.web_prj.member.domain.Member;
 import com.project.web_prj.member.repository.MemberMapper;
+import com.project.web_prj.util.LoginUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
@@ -17,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.project.web_prj.member.service.LoginFlag.*;
+import static com.project.web_prj.util.LoginUtils.LOGIN_COOKIE;
+import static com.project.web_prj.util.LoginUtils.getCurrentMemberAccount;
 
 @Service
 @Log4j2
@@ -38,7 +42,8 @@ public class MemberService {
 
     /**
      * 계정과 이메일의 중복을 확인하는 메서드
-     * @param type - 확인할 정보 (ex: account or email)
+     *
+     * @param type  - 확인할 정보 (ex: account or email)
      * @param value - 확인할 값
      * @return 중복이라면 true, 중복이 아니라면 false
      */
@@ -69,7 +74,7 @@ public class MemberService {
                 session.setMaxInactiveInterval(60 * 60); // 1시간 (지정 안 하면 기본값 30분으로 설정됨)
 
                 // 추가 - 자동 로그인 처리
-                if(inputData.isAutoLogin()){
+                if (inputData.isAutoLogin()) {
                     log.info("checked auto login user!!");
                     keepLogin(foundMember.getAccount(), session, response);
                 }
@@ -90,7 +95,7 @@ public class MemberService {
     private void keepLogin(String account, HttpSession session, HttpServletResponse response) {
         // 1. 자동 로그인 쿠키 생성 : 쿠키의 값으로 현재 세션의 아이디를 저장
         String sessionId = session.getId();
-        Cookie c = new Cookie("autoLoginCookie", sessionId);
+        Cookie c = new Cookie(LOGIN_COOKIE, sessionId);
         // 2. 쿠키 설정 (수명, 사용 경로)
         int limitTime = 90 * 24 * 60 * 60; // 90일에 대한 초
         c.setMaxAge(limitTime);
@@ -105,11 +110,28 @@ public class MemberService {
 
         // 자동로그인 유지시간(초)을 날짜로 변환
         long nowTime = System.currentTimeMillis();
-        Date limitDate = new Date(nowTime + ((long)limitTime * 1000));
+        Date limitDate = new Date(nowTime + ((long) limitTime * 1000));
         dto.setLimitTime(limitDate);
 
         memberMapper.saveAutoLoginValue(dto);
 
     }
 
+    // 자동로그인 해제
+    public void autoLogout(String account, HttpServletRequest request, HttpServletResponse response) {
+
+        // 1. 자동로그인 쿠키를 불러온 뒤 수명을 0초로 세팅해서 클라이언트에게 돌려보낸다.
+        Cookie c = LoginUtils.getAutoLoginCookie(request);
+        if (c != null) {
+            c.setMaxAge(0);
+            response.addCookie(c);
+            // 2. 데이터베이스 처리
+            AutoLoginDTO dto = new AutoLoginDTO();
+            dto.setSessionId("none");
+            dto.setLimitTime(new Date());
+            dto.setAccount(account);
+            memberMapper.saveAutoLoginValue(dto);
+        }
+
+    }
 }
