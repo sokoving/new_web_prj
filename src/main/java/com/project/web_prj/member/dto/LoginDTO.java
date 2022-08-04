@@ -1,4 +1,4 @@
-package com.project.web_prj.member.DTO;
+package com.project.web_prj.member.dto;
 
 import lombok.*;
 

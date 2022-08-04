@@ -1,6 +1,7 @@
 package com.project.web_prj.member.service;
 
-import com.project.web_prj.member.DTO.LoginDTO;
+import com.project.web_prj.member.dto.AutoLoginDTO;
+import com.project.web_prj.member.dto.LoginDTO;
 import com.project.web_prj.member.domain.Member;
 import com.project.web_prj.member.repository.MemberMapper;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,17 +56,25 @@ public class MemberService {
     }
 
     // 로그인 처리
-    public LoginFlag login(LoginDTO inputData, HttpSession session) {
+    public LoginFlag login(LoginDTO inputData, HttpSession session, HttpServletResponse response) {
         // 회원가입 여부 확인
         Member foundMember = memberMapper.findUser(inputData.getAccount());
         if (foundMember != null) {
             if (encoder.matches(inputData.getPassword(), foundMember.getPassword())) {
                 // 로그인 성공
-                // 세션에 사용자 정보기록 저장
+                // 기본 - 세션에 사용자 정보기록 저장
                 session.setAttribute("loginUser", foundMember);
 
-                // 세션 타임아웃 설정
+                // 기본 - 세션 타임아웃 설정
                 session.setMaxInactiveInterval(60 * 60); // 1시간 (지정 안 하면 기본값 30분으로 설정됨)
+
+                // 추가 - 자동 로그인 처리
+                if(inputData.isAutoLogin()){
+                    log.info("checked auto login user!!");
+                    keepLogin(foundMember.getAccount(), session, response);
+                }
+
+
                 return SUCCESS;
             } else {
                 // 비번 틀림
@@ -72,6 +84,32 @@ public class MemberService {
             // 아이디 없음
             return NO_ACC;
         }
+    }
+
+    // 자동 로그인 처리
+    private void keepLogin(String account, HttpSession session, HttpServletResponse response) {
+        // 1. 자동 로그인 쿠키 생성 : 쿠키의 값으로 현재 세션의 아이디를 저장
+        String sessionId = session.getId();
+        Cookie c = new Cookie("autoLoginCookie", sessionId);
+        // 2. 쿠키 설정 (수명, 사용 경로)
+        int limitTime = 90 * 24 * 60 * 60; // 90일에 대한 초
+        c.setMaxAge(limitTime);
+        c.setPath("/"); // 전체 경로 : 클라이언트의 첫 진입로가 어디든 간에 들어와도 자동로그인이 돼야 한다
+        // 3. 로컬에 쿠키 전송
+        response.addCookie(c);
+
+        // 4. DB에 쿠키값과 수명 저장
+        AutoLoginDTO dto = new AutoLoginDTO();
+        dto.setSessionId(sessionId);
+        dto.setAccount(account);
+
+        // 자동로그인 유지시간(초)을 날짜로 변환
+        long nowTime = System.currentTimeMillis();
+        Date limitDate = new Date(nowTime + ((long)limitTime * 1000));
+        dto.setLimitTime(limitDate);
+
+        memberMapper.saveAutoLoginValue(dto);
+
     }
 
 }

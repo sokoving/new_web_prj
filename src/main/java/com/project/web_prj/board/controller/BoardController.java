@@ -140,6 +140,7 @@ public class BoardController {
 
         return boardService.removeService(boardNo) ? "redirect:/board/list" : "redirect:/";
     }
+
     // 수정 화면 요청
     @GetMapping("/modify")
     public String modify(Long boardNo, Model model, HttpServletRequest request, HttpServletResponse response) {
@@ -148,7 +149,8 @@ public class BoardController {
         log.info("find article: {}", board);
 
         model.addAttribute("board", board);
-        model.addAttribute("account", board.getAccount());
+        model.addAttribute("validate", boardService.getMember(boardNo));
+
         return "board/board-modify";
     }
 

@@ -1,6 +1,7 @@
 package com.project.web_prj.board.service;
 
 import com.project.web_prj.board.domain.Board;
+import com.project.web_prj.board.dto.ValidateMemberDTO;
 import com.project.web_prj.board.repository.BoardMapper;
 import com.project.web_prj.common.paging.Page;
 import com.project.web_prj.common.search.Search;
@@ -25,7 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BoardService {
 
-//    private final BoardRepository repository;
+    //    private final BoardRepository repository;
     private final BoardMapper boardMapper;
     private final ReplyMapper replyMapper;
 
@@ -44,6 +45,7 @@ public class BoardService {
                 boardMapper.addFile(fileName);
             }
         }
+
 
         return flag;
     }
@@ -136,6 +138,7 @@ public class BoardService {
 
     // 제목 포멧 처리
     private void substringTitle(Board b) {
+
         // 만약에 글제목이 5글자 이상이라면
         // 5글자만 보여주고 나머지는 ...처리
         String title = b.getTitle();
@@ -165,6 +168,7 @@ public class BoardService {
         // 쿠키 조회 : HttpServletRequest request 필요
         // 해당 이름의 쿠키가 있으면 쿠키가 들어오고 없으면 null이 들어옴
         Cookie foundCookie = WebUtils.getCookie(request, "b" + boardNo);
+
         if (foundCookie == null) {
             boardMapper.upViewCount(boardNo);
 
@@ -202,7 +206,8 @@ public class BoardService {
         return boardMapper.findFileNames(bno);
     }
 
-    public Object getMember(Long boardNo) {
+    // 게시물 번호로 글쓴이 회원정보 가져오기
+    public ValidateMemberDTO getMember(Long boardNo) {
         return boardMapper.findMemberByBoardNo(boardNo);
     }
 }
