@@ -100,8 +100,11 @@
             </div>
 
             <div class="btn-group btn-group-lg custom-btn-group" role="group">
-                <button id="mod-btn" type="button" class="btn btn-warning">수정</button>
-                <button id="del-btn" type="button" class="btn btn-danger">삭제</button>
+
+                <c:if test="${loginUser.account == b.account || loginUser.auth == 'ADMIN'}">
+                    <button id="mod-btn" type="button" class="btn btn-warning">수정</button>
+                    <button id="del-btn" type="button" class="btn btn-danger">삭제</button>
+                </c:if>
                 <button id="list-btn" type="button" class="btn btn-dark">목록</button>
             </div>
 
@@ -109,32 +112,31 @@
 
             <div id="replies" class="row">
                 <div class="offset-md-1 col-md-10">
+                    
                     <!-- 댓글 쓰기 영역 -->
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <div class="form-group">
-                                        <label for="newReplyText" hidden>댓글 내용</label>
-                                        <textarea rows="3" id="newReplyText" name="replyText" class="form-control"
-                                            placeholder="댓글을 입력해주세요."></textarea>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <div class="form-group">
+                                            <label for="newReplyText" hidden>댓글 내용</label>
+                                            <textarea rows="3" id="newReplyText" name="replyText" class="form-control"
+                                                placeholder="댓글을 입력해주세요."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="newReplyWriter" hidden>댓글 작성자</label>
+                                            <input id="newReplyWriter" name="replyWriter" type="text"
+                                                class="form-control" placeholder="작성자 이름" style="margin-bottom: 6px;"
+                                                readonly value="${loginUser.name}">
+                                            <button id="replyAddBtn" type="button"
+                                                class="btn btn-dark form-control">등록</button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="form-group">
-                                        <label for="newReplyWriter" hidden>댓글 작성자</label>
-                                        <input id="newReplyWriter" name="replyWriter" type="text" class="form-control"
-                                            placeholder="작성자 이름" style="margin-bottom: 6px;">
-                                        <button id="replyAddBtn" type="button"
-                                            class="btn btn-dark form-control">등록</button>
-                                    </div>
-                                </div>
-
-
-
                             </div>
-                        </div>
-                    </div> <!-- end reply write -->
+                        </div> <!-- end reply write -->
 
                     <!--댓글 내용 영역-->
                     <div class="card">
@@ -206,23 +208,32 @@
 
     <!-- 게시글 상세보기 관련 script -->
     <script>
-        const [$modBtn, $delBtn, $listBtn] = [...document.querySelector('div[role=group]').children];
+        // const [$modBtn, $delBtn, $listBtn] = [...document.querySelector('div[role=group]').children];
 
-        // const $modBtn = document.getElementById('mod-btn');
-        //수정버튼
-        $modBtn.onclick = e => {
-            location.href = '/board/modify?boardNo=${b.boardNo}';
-        };
+        const $modBtn = document.getElementById('mod-btn');
+        const $delBtn = document.getElementById('del-btn');
+        const $listBtn = document.getElementById('list-btn');
 
-        //삭제버튼
-        $delBtn.onclick = e => {
-            if (!confirm('정말 삭제하시겠습니까?')) {
-                return;
-            }
-            location.href = '/board/delete?boardNo=${b.boardNo}';
-        };
+        if ($modBtn !== null) {
+            //수정버튼
+            $modBtn.onclick = e => {
+                location.href = '/board/modify?boardNo=${b.boardNo}';
+            };
+        }
+
+        if ($delBtn !== null) {
+
+            //삭제버튼
+            $delBtn.onclick = e => {
+                if (!confirm('정말 삭제하시겠습니까?')) {
+                    return;
+                }
+                location.href = '/board/delete?boardNo=${b.boardNo}';
+            };
+        }
         //목록버튼
         $listBtn.onclick = e => {
+            console.log('목록버튼 클릭!');
             location.href = '/board/list?pageNum=${p.pageNum}&amount=${p.amount}';
         };
     </script>
@@ -583,7 +594,7 @@
                 else {
 
                     const $a = document.createElement('a');
-                    $a.setAttribute('href', '/loadFile?fileName=' + fileName);  // raw file 줌
+                    $a.setAttribute('href', '/loadFile?fileName=' + fileName); // raw file 줌
 
                     const $img = document.createElement('img');
                     $img.classList.add('img-sizing');
@@ -594,7 +605,6 @@
                     $a.innerHTML += '<span>' + originFileName + '</span>';
 
                     $('.uploaded-list').append($a);
-
 
                 }
 

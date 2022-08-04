@@ -5,6 +5,8 @@ import com.project.web_prj.board.service.BoardService;
 import com.project.web_prj.common.paging.Page;
 import com.project.web_prj.common.paging.PageMaker;
 import com.project.web_prj.common.search.Search;
+import com.project.web_prj.util.FileUtils;
+import com.project.web_prj.util.LoginUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
@@ -94,7 +96,8 @@ public class BoardController {
     @PostMapping("/write")
     public String write(Board board,
                         @RequestParam("files") List<MultipartFile> fileList,
-                        RedirectAttributes ra) {
+                        RedirectAttributes ra,
+                        HttpSession session) {
 
         log.info("controller request /board/write POST! - {}", board);
 
@@ -107,6 +110,9 @@ public class BoardController {
             // board객체에 파일명 추가
             board.setFileNames(fileNames);
         }*/
+
+        // 현재 로그인 사용자 계정명 추가
+        board.setAccount(LoginUtils.getCurrentMemberAccount(session));
 
         boolean flag = boardService.saveService(board);
         // 게시물 등록에 성공하면 클라이언트에 성공메시지 전송

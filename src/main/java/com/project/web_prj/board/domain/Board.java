@@ -18,6 +18,7 @@ public class Board {
     private String content;
     private Long viewCnt;
     private Date regDate;
+    private String account;
 
 
     // 커스텀 데이터 필드
