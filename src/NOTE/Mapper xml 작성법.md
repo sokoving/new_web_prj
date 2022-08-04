@@ -34,6 +34,9 @@
                 ORDER BY price DESC
             </select>
 ```
+``` 컬럼과 필드명이 완전히 같다면
+    resultType="com.project.web_prj.board.dto.ValidateMemberDTO"
+```
  + resultMap 속성
 ``` 다중 컬럼 조회: resultMap 속성, 값으로 사용할 resultMap의 id 명시
             <select id="findOne" resultMap="boardMap">

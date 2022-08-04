@@ -97,7 +97,8 @@ public class BoardController {
     public String write(Board board,
                         @RequestParam("files") List<MultipartFile> fileList,
                         RedirectAttributes ra,
-                        HttpSession session) {
+                        HttpSession session
+    ) {
 
         log.info("controller request /board/write POST! - {}", board);
 
@@ -123,8 +124,9 @@ public class BoardController {
 
     // 게시물 삭제 요청
     @GetMapping("/delete")
-    public String delete(Long boardNo) {
+    public String delete(Long boardNo, Model model, HttpServletResponse response, HttpServletRequest request) {
         log.info("controller request /board/delete GET! - bno: {}", boardNo);
+        model.addAttribute("board", boardService.findOneService(boardNo, response, request));
         return boardService.removeService(boardNo)
                 ? "redirect:/board/list" : "redirect:/";
     }
@@ -137,6 +139,7 @@ public class BoardController {
         log.info("find article: {}", board);
 
         model.addAttribute("board", board);
+        model.addAttribute("account", board.getAccount());
         return "board/board-modify";
     }
 
@@ -158,4 +161,5 @@ public class BoardController {
 
         return new ResponseEntity<>(files, HttpStatus.OK);
     }
+
 }

@@ -14,9 +14,15 @@ public class LoginUtils {
         return session.getAttribute(LOGIN_FLAG) != null;
     }
 
-    // 로그인 사용자 계정 가져오기
-    public static String getCurrentMemberAccount(HttpSession session){
-        Member member = (Member)session.getAttribute(LOGIN_FLAG);
+    // 로그인 한 사용자 계정 가져오기
+    public static String getCurrentMemberAccount(HttpSession session) {
+        Member member = (Member) session.getAttribute(LOGIN_FLAG);
         return member.getAccount();
+    }
+
+    // 로그인 한 사용자 권한 가져오기
+    public static String getCurrentMemberAuth(HttpSession session) {
+        Member member = (Member) session.getAttribute(LOGIN_FLAG);
+        return member.getAuth().toString();
     }
 }
