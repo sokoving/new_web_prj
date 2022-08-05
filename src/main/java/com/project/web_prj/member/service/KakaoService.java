@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
+
 
 @Service
 @Log4j2
@@ -41,7 +41,7 @@ public class KakaoService implements OAuthService, OAuthValue {
         // 3. 응답 데이터 받기
         try (BufferedReader br
                      = new BufferedReader(
-                            new InputStreamReader(conn.getInputStream()))) {
+                new InputStreamReader(conn.getInputStream()))) {
 
             // 3-a. 응답데이터를 입력스트림으로부터 읽기
             String responseData = br.readLine();
@@ -57,15 +57,19 @@ public class KakaoService implements OAuthService, OAuthValue {
              */
             // 3-b. 응답받은 json 데이터를 gson 라이브러리를 사용하여 자바 객체로 파싱
             JsonParser parser = new JsonParser();
+            // JsonElement는 자바로 변환된 JSON
             JsonElement element = parser.parse(responseData);
 
             // 3-c. json 프로퍼티 키를 사용해서 필요한 데이터 추출
-                // (getAsJsonArray() > [] / getAsJsonObject() > {})
+            // (getAsJsonArray() > [] / getAsJsonObject() > {})
             JsonObject object = element.getAsJsonObject();
             String accessToken = object.get("access_token").getAsString();
             String tokenType = object.get("token_type").getAsString();
+
             log.info("accessToken - {}", accessToken);
             log.info("tokenType - {}", tokenType);
+
+            return accessToken;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,7 +80,7 @@ public class KakaoService implements OAuthService, OAuthValue {
     }
 
     // server to server 요청 정보 작성
-    private void sendAccessTokenRequest(String authCode, HttpURLConnection conn) throws IOException {
+    private static void sendAccessTokenRequest(String authCode, HttpURLConnection conn) throws IOException {
 
 
         // 2-d.(버퍼 스트림으로)  요청 파라미터 추가
@@ -97,6 +101,81 @@ public class KakaoService implements OAuthService, OAuthValue {
             // 응답 상태코드 확인
             int responseCode = conn.getResponseCode();
             log.info("response code - {}", responseCode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    // 액세스 토큰을 통해 사용자 정보 요청(프로필사진, 닉네임 등)
+    public void getKakaoUserInfo(String accessToken) throws Exception {
+
+        String reqUri = "https://kapi.kakao.com/v2/user/me";
+
+        URL url = new URL(reqUri);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setRequestMethod("POST");
+
+        conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+        conn.setDoOutput(true);
+
+        int responseCode = conn.getResponseCode();
+        log.info("userInfo res-code - {}", responseCode);
+
+        //  응답 데이터 받기
+        try (BufferedReader br
+                     = new BufferedReader(
+                new InputStreamReader(conn.getInputStream()))) {
+
+            String responseData = br.readLine();
+            log.info("responseData - {}", responseData);
+            /*
+            {
+                    "id": 2375373387,
+                    "connected_at": "2022-08-05T02:14:43Z",
+                    "properties": {
+                        "nickname": "김봉만",
+                        "profile_image": "http://k.kakaocdn.net/dn/bvHw7F/btrITnk1wfP/ljDz74dvKm8khpQQLCP9Lk/img_640x640.jpg",
+                        "thumbnail_image": "http://k.kakaocdn.net/dn/bvHw7F/btrITnk1wfP/ljDz74dvKm8khpQQLCP9Lk/img_110x110.jpg"
+                    },
+                    "kakao_account": {
+                        "profile_nickname_needs_agreement": false,
+                        "profile_image_needs_agreement": false,
+                        "profile": {
+                            "nickname": "김봉만",
+                            "thumbnail_image_url": "http://k.kakaocdn.net/dn/bvHw7F/btrITnk1wfP/ljDz74dvKm8khpQQLCP9Lk/img_110x110.jpg",
+                            "profile_image_url": "http://k.kakaocdn.net/dn/bvHw7F/btrITnk1wfP/ljDz74dvKm8khpQQLCP9Lk/img_640x640.jpg",
+                            "is_default_image": false
+                        },
+                        "has_email": true,
+                        "email_needs_agreement": true,
+                        "has_gender": true,
+                        "gender_needs_agreement": true
+                    }
+                }
+             */
+
+            JsonParser parser = new JsonParser();
+            JsonElement element = parser.parse(responseData);
+
+            JsonObject object = element.getAsJsonObject();
+
+            // 받은 json 데이터에서 원하는 값 뽑기
+            JsonObject kakaoAccount = object.get("kakao_account").getAsJsonObject();
+            JsonObject profile = kakaoAccount.get("profile").getAsJsonObject();
+
+            String nickname = profile.get("nickname").getAsString();
+            String profileImage = profile.get("profile_image_url").getAsString();
+            String email = kakaoAccount.get("email").getAsString();
+
+//            private String nickName;
+//            private String profileImg;
+//            private String email;
+//            private String gender;
+
 
         } catch (Exception e) {
             e.printStackTrace();

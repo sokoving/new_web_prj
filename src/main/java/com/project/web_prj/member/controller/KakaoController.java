@@ -32,7 +32,9 @@ public class KakaoController {
         // 인가코드를 통해 액세스 토큰 발급받기
         // 우리 서버에서 카카오 서버로 통신해야 함(Server to Server)
         String accessToken = kakaoService.getAccessToken(code);
-        log.info("accessToken - {}", accessToken);
+
+        // 액세스 토큰을 통해 사용자 정보 요청(프로필사진, 닉네임 등)
+        kakaoService.getKakaoUserInfo(accessToken);
 
         return "";
     }
