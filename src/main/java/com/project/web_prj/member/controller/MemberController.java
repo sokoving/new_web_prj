@@ -1,7 +1,9 @@
 package com.project.web_prj.member.controller;
 
+import com.project.web_prj.member.domain.SNSLogin;
 import com.project.web_prj.member.dto.LoginDTO;
 import com.project.web_prj.member.domain.Member;
+import com.project.web_prj.member.service.KakaoService;
 import com.project.web_prj.member.service.LoginFlag;
 import com.project.web_prj.member.service.MemberService;
 import com.project.web_prj.util.LoginUtils;
@@ -18,6 +20,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import static com.project.web_prj.member.domain.OAuthValue.*;
+import static com.project.web_prj.member.domain.SNSLogin.*;
+import static com.project.web_prj.util.LoginUtils.*;
+
 @Controller
 @Log4j2
 @RequiredArgsConstructor
@@ -25,6 +31,7 @@ import javax.servlet.http.HttpSession;
 public class MemberController {
 
     private final MemberService memberService;
+    private final KakaoService kakaoService;
 
     // 회원가입 양식 띄우기 요청
     @GetMapping("/sign-up")
@@ -54,7 +61,7 @@ public class MemberController {
     // 로그인 화면을 열어주는 요청처리
     // @ModelAttribute String message: 로그인이 필요한 요청인데 인터셉터에서 false 나올 경우 오는 메세지를 모델에 담아 jsp에 준다
     @GetMapping("/sign-in")
-    public void signIn(@ModelAttribute("message") String message, HttpServletRequest request) {
+    public void signIn(@ModelAttribute("message") String message, HttpServletRequest request, Model model) {
         log.info("/member/sign-in GET! - forwarding to sign-in.jsp");
 
         // 요청 정보 헤더 안에는 Referer라는 키가 있는데
@@ -63,6 +70,9 @@ public class MemberController {
         log.info("referer: {}", referer);
 
         request.getSession().setAttribute("redirectURI", referer);
+
+        model.addAttribute("kakaoAppKey", KAKAO_APP_KEY);
+        model.addAttribute("kakaoRedirect", KAKAO_REDIRECT_URI);
     }
 
     // 로그인 요청 처리
@@ -89,6 +99,7 @@ public class MemberController {
 
     }
 
+    // 로그아웃
     @GetMapping("/sign-out")
     public String signOut(HttpServletRequest request, HttpServletResponse response) {
 
@@ -99,10 +110,11 @@ public class MemberController {
             if (LoginUtils.hasAutoLoginCookie(request)){
                 memberService.autoLogout(LoginUtils.getCurrentMemberAccount(session), request, response);
             }
+            // SNS 로그인 상태라면 해당 SNS 로그아웃 처리를 진행
 
 
             // 1. 세션에서 정보를 삭제한다.
-            session.removeAttribute(LoginUtils.LOGIN_FLAG);
+            session.removeAttribute(LOGIN_FLAG);
 
             // 2. 세션을 무효화한다.
             session.invalidate();

@@ -4,11 +4,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.project.web_prj.member.domain.OAuthValue;
+import com.project.web_prj.member.dto.KaKaoUserInfoDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 
@@ -109,7 +111,7 @@ public class KakaoService implements OAuthService, OAuthValue {
 
 
     // 액세스 토큰을 통해 사용자 정보 요청(프로필사진, 닉네임 등)
-    public void getKakaoUserInfo(String accessToken) throws Exception {
+    public KaKaoUserInfoDTO getKakaoUserInfo(String accessToken) throws Exception {
 
         String reqUri = "https://kapi.kakao.com/v2/user/me";
 
@@ -165,20 +167,91 @@ public class KakaoService implements OAuthService, OAuthValue {
 
             // 받은 json 데이터에서 원하는 값 뽑기
             JsonObject kakaoAccount = object.get("kakao_account").getAsJsonObject();
+
             JsonObject profile = kakaoAccount.get("profile").getAsJsonObject();
 
-            String nickname = profile.get("nickname").getAsString();
+            String nickName = profile.get("nickname").getAsString();
             String profileImage = profile.get("profile_image_url").getAsString();
-            String email = kakaoAccount.get("email").getAsString();
 
-//            private String nickName;
-//            private String profileImg;
-//            private String email;
-//            private String gender;
+//            if (kakaoAccount.get("email_needs_agreement"))
+//            String email = kakaoAccount.get("email").getAsString();
+            String email = "sokoving@gmail.com";
+//            String gender = kakaoAccount.get("gender").getAsString();
+            String gender = "female";
 
+            KaKaoUserInfoDTO dto = new KaKaoUserInfoDTO(nickName, profileImage, email, gender);
+            dto.setNickName(nickName);
+            dto.setProfileImage(profileImage);
+
+            log.info("카카오 유저 정보: {}", dto);
+
+            return dto;
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    // 카카오 로그아웃
+        // REST API - 로그아웃 :
+        // REST API - 카카오 계정과 함께 로그아웃 :
+    public KaKaoUserInfoDTO logout(String accessToken) throws Exception {
+
+        String reqUri = "https://kapi.kakao.com/v1/user/logout";
+
+        URL url = new URL(reqUri);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setRequestMethod("POST");
+
+        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+        conn.setDoOutput(true);
+
+        int responseCode = conn.getResponseCode();
+        log.info("userInfo res-code - {}", responseCode);
+
+        //  응답 데이터 받기
+        try (BufferedReader br
+                     = new BufferedReader(
+                new InputStreamReader(conn.getInputStream()))) {
+
+            String responseData = br.readLine();
+            log.info("responseData - {}", responseData);
+
+
+            JsonParser parser = new JsonParser();
+            JsonElement element = parser.parse(responseData);
+
+            JsonObject object = element.getAsJsonObject();
+
+            // 받은 json 데이터에서 원하는 값 뽑기
+            JsonObject kakaoAccount = object.get("kakao_account").getAsJsonObject();
+
+            JsonObject profile = kakaoAccount.get("profile").getAsJsonObject();
+
+            String nickName = profile.get("nickname").getAsString();
+            String profileImage = profile.get("profile_image_url").getAsString();
+
+//            if (kakaoAccount.get("email_needs_agreement"))
+//            String email = kakaoAccount.get("email").getAsString();
+            String email = "sokoving@gmail.com";
+//            String gender = kakaoAccount.get("gender").getAsString();
+            String gender = "female";
+
+            KaKaoUserInfoDTO dto = new KaKaoUserInfoDTO(nickName, profileImage, email, gender);
+            dto.setNickName(nickName);
+            dto.setProfileImage(profileImage);
+
+            log.info("카카오 유저 정보: {}", dto);
+
+            return dto;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+
+
     }
 }
