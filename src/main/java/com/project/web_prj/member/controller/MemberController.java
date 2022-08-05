@@ -62,17 +62,19 @@ public class MemberController {
     // @ModelAttribute String message: 로그인이 필요한 요청인데 인터셉터에서 false 나올 경우 오는 메세지를 모델에 담아 jsp에 준다
     @GetMapping("/sign-in")
     public void signIn(@ModelAttribute("message") String message, HttpServletRequest request, Model model) {
-        log.info("/member/sign-in GET! - forwarding to sign-in.jsp");
+        log.info("/member/sign-in GET! - forwarding to sign-in.jsp - {}", message);
 
         // 요청 정보 헤더 안에는 Referer라는 키가 있는데
         // 여기 안에는 이 페이지로 진입할 때 어디에서 왔는지 URI정보가 들어있음.
         String referer = request.getHeader("Referer");
         log.info("referer: {}", referer);
 
+
         request.getSession().setAttribute("redirectURI", referer);
 
         model.addAttribute("kakaoAppKey", KAKAO_APP_KEY);
         model.addAttribute("kakaoRedirect", KAKAO_REDIRECT_URI);
+
     }
 
     // 로그인 요청 처리
@@ -101,17 +103,30 @@ public class MemberController {
 
     // 로그아웃
     @GetMapping("/sign-out")
-    public String signOut(HttpServletRequest request, HttpServletResponse response) {
+    public String signOut(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         HttpSession session = request.getSession();
 
-        if (LoginUtils.isLogin(session)) {
-            // 만약 자동로그인 상태라면 해제한다.
-            if (LoginUtils.hasAutoLoginCookie(request)){
-                memberService.autoLogout(LoginUtils.getCurrentMemberAccount(session), request, response);
-            }
-            // SNS 로그인 상태라면 해당 SNS 로그아웃 처리를 진행
+        if (isLogin(session)) {
 
+            // 만약 자동로그인 상태라면 해제한다.
+            if (hasAutoLoginCookie(request)) {
+                memberService.autoLogout(getCurrentMemberAccount(session), request, response);
+            }
+
+            // SNS로그인 상태라면 해당 SNS 로그아웃처리를 진행
+            SNSLogin from = (SNSLogin) session.getAttribute(LOGIN_FROM);
+            switch (from) {
+                case KAKAO:
+                    kakaoService.logout((String) session.getAttribute("accessToken"));
+                    break;
+                case NAVER:
+                    break;
+                case GOOGLE:
+                    break;
+                case FACEBOOK:
+                    break;
+            }
 
             // 1. 세션에서 정보를 삭제한다.
             session.removeAttribute(LOGIN_FLAG);

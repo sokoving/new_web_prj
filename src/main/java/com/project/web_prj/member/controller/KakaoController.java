@@ -1,11 +1,8 @@
 package com.project.web_prj.member.controller;
 
 import com.project.web_prj.member.domain.Member;
-import com.project.web_prj.member.domain.OAuthValue;
-import com.project.web_prj.member.domain.SNSLogin;
 import com.project.web_prj.member.dto.KaKaoUserInfoDTO;
 import com.project.web_prj.member.service.KakaoService;
-import com.project.web_prj.util.LoginUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
@@ -22,12 +19,11 @@ import static com.project.web_prj.util.LoginUtils.*;
 @Log4j2
 @RequiredArgsConstructor
 public class KakaoController {
-
-    final KakaoService kakaoService;
+    private final KakaoService kakaoService;
 
     @GetMapping("/kakao-test")
-    public void kakaoTest(Model model){
-        log.info("forwarding kakao-test.jsp");
+    public void kakoTest(Model model) {
+        log.info("forward to kakao-test.jsp!");
         model.addAttribute("appKey", KAKAO_APP_KEY);
         model.addAttribute("redirectUri", KAKAO_REDIRECT_URI);
     }
@@ -53,7 +49,7 @@ public class KakaoController {
             session.setAttribute(LOGIN_FLAG, member);
             session.setAttribute("profile_path", userInfo.getProfileImage());
             session.setAttribute(LOGIN_FROM, KAKAO);
-            session.setAttribute("accessToken", accessToken); // 로그인 유지시키는 토큰
+            session.setAttribute("accessToken", accessToken);  // 로그인 유지시키는 토큰
             return "redirect:/";
         }
 
@@ -62,7 +58,8 @@ public class KakaoController {
 
     // 카카오 로그아웃
     @GetMapping("/kakao/logout")
-    public String kakaoLogout(HttpSession session) throws Exception{
+    public String kakaoLogout(HttpSession session) throws Exception {
+
         // 카카오 로그아웃 처리 (카카오 계정과 함께 로그아웃)
         kakaoService.logout((String) session.getAttribute("accessToken"));
 

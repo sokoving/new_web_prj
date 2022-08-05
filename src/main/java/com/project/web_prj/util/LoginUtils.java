@@ -30,6 +30,7 @@ public class LoginUtils {
         Member member = (Member) session.getAttribute(LOGIN_FLAG);
         return member.getAuth().toString();
     }
+
     // 자동 로그인 쿠키 가져오기
     public static Cookie getAutoLoginCookie(HttpServletRequest request) {
         return WebUtils.getCookie(request, LOGIN_COOKIE);
@@ -39,4 +40,5 @@ public class LoginUtils {
     public static boolean hasAutoLoginCookie(HttpServletRequest request) {
         return getAutoLoginCookie(request) != null;
     }
+
 }
