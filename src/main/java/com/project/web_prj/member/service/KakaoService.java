@@ -1,5 +1,8 @@
 package com.project.web_prj.member.service;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.project.web_prj.member.domain.OAuthValue;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -33,12 +36,14 @@ public class KakaoService implements OAuthService, OAuthValue {
         // 요청 헤더 설정
         conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
         conn.setDoOutput(true); // 응답 결과를 받겠다.
-        snedAccessTokenRequest(authCode, conn);
+        sendAccessTokenRequest(authCode, conn);
 
         // 3. 응답 데이터 받기
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+        try (BufferedReader br
+                     = new BufferedReader(
+                            new InputStreamReader(conn.getInputStream()))) {
 
-            // 3-a. 응답 데이터를 입력 스트림으로부터 읽기
+            // 3-a. 응답데이터를 입력스트림으로부터 읽기
             String responseData = br.readLine();
             log.info("responseData - {}", responseData);
             /*
@@ -50,8 +55,19 @@ public class KakaoService implements OAuthService, OAuthValue {
                     ,"scope":"profile_image profile_nickname"
                     ,"refresh_token_expires_in":5183999}
              */
+            // 3-b. 응답받은 json 데이터를 gson 라이브러리를 사용하여 자바 객체로 파싱
+            JsonParser parser = new JsonParser();
+            JsonElement element = parser.parse(responseData);
 
-        } catch (Exception e){
+            // 3-c. json 프로퍼티 키를 사용해서 필요한 데이터 추출
+                // (getAsJsonArray() > [] / getAsJsonObject() > {})
+            JsonObject object = element.getAsJsonObject();
+            String accessToken = object.get("access_token").getAsString();
+            String tokenType = object.get("token_type").getAsString();
+            log.info("accessToken - {}", accessToken);
+            log.info("tokenType - {}", tokenType);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -60,7 +76,7 @@ public class KakaoService implements OAuthService, OAuthValue {
     }
 
     // server to server 요청 정보 작성
-    private void snedAccessTokenRequest(String authCode, HttpURLConnection conn) throws IOException {
+    private void sendAccessTokenRequest(String authCode, HttpURLConnection conn) throws IOException {
 
 
         // 2-d.(버퍼 스트림으로)  요청 파라미터 추가
@@ -86,5 +102,4 @@ public class KakaoService implements OAuthService, OAuthValue {
             e.printStackTrace();
         }
     }
-
 }
