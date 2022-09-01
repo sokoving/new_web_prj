@@ -32,4 +32,10 @@ public class Page {
         }
         this.amount = amount;
     }
+
+//    매퍼의 #{start}는 getStart() 메서드를 부르는 것
+//    MariaDB에서 LIMIT 첫 번재 숫자 구하기
+    public int getStart(){
+        return (pageNum-1)*amount;
+    }
 }

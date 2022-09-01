@@ -37,6 +37,7 @@ class BoardMapperTest {
         Board board;
         for (int i = 1; i <= 300; i++) {
             board = new Board();
+            board.setAccount("abcde");
             board.setTitle("제목" + i);
             board.setWriter("길동이" + i);
             board.setContent("안녕하세요요요요요요요~~" + i);
